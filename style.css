@@ -26,8 +26,14 @@
       font: 25px Helvetica, Arial; 
       margin: 15px;
     }
-    #bottom {
+    #bottom_right {
       position: absolute;
       bottom: 5px;
       right: 0;
+    }
+    
+    #bottom_left {
+      position: absolute;
+      bottom: 5px;
+      left: 0;
     }
