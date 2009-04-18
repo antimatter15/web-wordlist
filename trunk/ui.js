@@ -3,12 +3,19 @@
         "parts.txt": "Parts"
       }
       
-      var themes = {
-        "gray": {bg: "DarkGray", text: "black", link: "#888", linksel: "black"},
-        "black": {bg: "black", text: "white", link: "#A9A9A9", linksel: "white"},
-        "white": {bg: "white", text: "black", link: "#A9A9A9", linksel: "black"}
-      }
+      var themes = {}
       
+        themes["gray"] = themes["default"] = 
+          {bg: "DarkGray", text: "black", link: "#888888", linksel: "black"},
+        themes["black"] = themes["noir"] = 
+          {bg: "black", text: "white", link: "#A9A9A9", linksel: "white"},
+        themes["white"] = themes['blanco'] = themes['blank'] = 
+          {bg: "white", text: "black", link: "#A9A9A9", linksel: "black"}
+        themes["azure"] = themes["blue"] = 
+          {bg: "#F0FFFF", text: "#007fff", link: "#5B92E5", linksel: "blue"}
+        themes["green"] = themes["lime"] =
+          {bg: "#90EE90", text: "#006400", link: "#006400", linksel: "black"}
+          
       function set_theme(name){
         theme = themes[name];
         $("body").css("background-color", theme.bg);
@@ -20,19 +27,28 @@
       var theme = themes['gray'];
       
       function msg(content, color){
+        if(content === false) return;
+        
         $("#msg").fadeOut();
         if(content){
+          if(content.indexOf(";") > 2 && content.indexOf(";") < 7){
+            color = content.substr(0,content.indexOf(";"))
+            content = content.substr(color.length+1);
+          }
           $("#msg").queue(function(){
-            $("#msg").text(content);
-            $(this).dequeue();
+            $("#msg").html(content);
             $("#msg").css("background-color", color);
             $("#msg").fadeIn();
+            if($.browser.msie){
+              $("#msg").css("display","");
+            }
+            $(this).dequeue();
           });
         }
       }
       
       function query(content){
-        $("#query").text(content);
+        $("#query").html(content);
       }
       
       function hide_box(){
@@ -53,26 +69,37 @@
           $(this).css("display","none");
           $(this).html("")
           $.each(list, function(index, item){
-            var prettyindex=pretty_names[index]?pretty_names[index]:index;
+            var prettyindex = pretty_names[index]?pretty_names[index]:index.replace(".txt","");
             $(document.createElement("a"))
               .text(prettyindex)
               .data("index",index)
               .attr("href","#")
-              .css("color", "#888")
+              .css("color", theme.link)
               .click(function(e){
                 cfile = $(this).data("index")
                 
                 e.preventDefault();
                 $("a")
                   .removeClass("linksel")
-                  .animate({color: theme.link})
+                if(!$.browser.msie){
+                  $("a").animate({color: theme.link})
+                }else{
+                  $("a").css("color", theme.link);
+                }
                 $(this)
                   .addClass("linksel")
-                  .animate({color: theme.linksel})
-                hide_box();
-                show_box();
-                
-                newlist();
+                  .queue(function(){
+                    setTimeout(function(){
+                      newlist();
+                    },100)
+                    $(this).dequeue();
+                  })
+                if(!$.browser.msie){
+                  $(this).animate({color: theme.linksel})
+                }else{
+                  $(this).css("color", theme.linksel);
+                }
+                  hide_box();
             })
             .appendTo("#sub")
           })
@@ -98,10 +125,12 @@
       
       function build_list(){
         $.each(lists, function(index, item){
-          $(document.createElement("option"))
-            .attr("id","whatever"+index)
-            .val(index)
-            .text("Word List #"+index)
-            .appendTo("#list_select")
+          if(index){
+            $(document.createElement("option"))
+              .attr("id","whatever"+index)
+              .val(index)
+              .text(index)
+              .appendTo("#list_select")
+          }
         })
       }
