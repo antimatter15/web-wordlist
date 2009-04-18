@@ -1,7 +1,7 @@
 var ds = null;
                 
 $(document).ready(function(){            
-  ds = new Datastore("wordlist-english-version2", "dsproxy.php?", true);
+  ds = new Datastore("googlecode_wordlist_main_info", "dsproxy.php?", true);
   if(window.location.search.length > 1){
     if(unescape(window.location.search.substr(1,1)) == "!"){
       override(unescape(window.location.search.substr(2)));
