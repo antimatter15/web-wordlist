@@ -1,6 +1,6 @@
-var default_config = {
-  "parts.txt": {query: "What does {word} ({blah}) mean?"}
-}
+var default_config = {}
+                
+                
 var lists = {};
 var cgroup = "";
 var cfile = "";
@@ -21,19 +21,21 @@ function parse_index(text){
 }
 
 function parse_list(group, file, text){
-  lists[group][file].config = default_config[file]?default_config[file]:{}
+  lists[group][file].config = clone(default_config[file]?default_config[file]:default_config['_all'])
   $.each(text.split("\n"), function(index, item){
-    if(item.substr(0,7) == "#!type:"){
+    if(item == ""){
+      //FAIL
+    }else if(item.substr(0,7) == "#!type:"){
       lists[group][file].config = _.extend(lists[group][file].config,
         default_config[item.substr(7)]);
-    }
-    if(item.substr(0,7) == "#!conf:"){
+    }else if(item.substr(0,7) == "#!conf:"){
       lists[group][file].config = _.extend(lists[group][file].config,
         eval("("+item.substr(7)+")"));
-    }
-    if(!lists[group][file].list) lists[group][file].list = [];
-    var parts = item.split(",");
-    lists[group][file].list.push(parts);
+    }else{
+      if(!lists[group][file].list) lists[group][file].list = [];
+      var parts = item.split(",");
+      lists[group][file].list.push(parts);
+      }
   })
 }
 
